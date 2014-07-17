@@ -17,11 +17,12 @@ def http_download(url):
 
 def main():
     html_page = http_download(url)
-    xpath_data = lxml.html.fromstring(html_page).xpath("//div[@class='_6ks']")
     print html_page
-    print xpath_data, len(xpath_data)
-    for i in xpath_data:
-        print lxml.html.tostring(i)
-
+#    xpath_data = lxml.html.fromstring(html_page).xpath("//div[@class='_6ks']")
+#    print html_page
+#    print xpath_data, len(xpath_data)
+#    for i in xpath_data:
+#        print lxml.html.tostring(i)
+#
 if __name__ == "__main__":
     main()
