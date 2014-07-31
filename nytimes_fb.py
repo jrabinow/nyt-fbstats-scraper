@@ -4,8 +4,6 @@ import urllib, urllib2
 import re
 import HTMLParser
 
-url = "http://facebook.com/nytimes/" #posts/10150428621164999"
-
 def http_download(url):
     try:
         request = urllib2.Request(url)
@@ -24,14 +22,13 @@ def decode_unicode_url(url_str):
 def decode_quoted_url(url_str):
     return urllib.unquote(url_str)
 
-def main():
+def extract_shortened_urls(url):
     html_page = http_download(url)
     escaped_seq = re.compile(r"^https?:(\\{2}/){2}nyti\.ms\\{2}/[a-zA-Z0-9]+$")
     unicode_seq = re.compile(r"^https?\\{2}u00253A(\\{2}u00252F){2}nyti\.ms\\{2}u00252F[a-zA-Z0-9]+$")
     url_encoded_seq = re.compile(r"^https?%3A%2F%2Fnyti.ms%2F[a-zA-Z0-9]+$")
     clean_url_seq = re.compile(r"^https?://nyti.ms/[a-zA-Z0-9]+$")
     parser = HTMLParser.HTMLParser()
-
     url_list = {}
 
     for element in re.findall("https?.{,30}nyti\.ms[/a-zA-Z0-9\\%]+", html_page):
@@ -46,11 +43,18 @@ def main():
         else:
             print element + "$"
             raise Exception("Invalid match")
+
         if target_url not in url_list:
             url_list[target_url] = True
+    return url_list
 
+def apply_transform(url_list):
     for target_url in url_list:
         print target_url
+
+def main():
+    url_list = extract_shortened_urls("http://facebook.com/nytimes/")
+    apply_transform(url_list)
 
 if __name__ == "__main__":
     main()
