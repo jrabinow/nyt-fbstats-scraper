@@ -3,6 +3,7 @@
 import urllib, urllib2
 import re
 import HTMLParser
+from cookielib import CookieJar
 
 def http_download(url):
     try:
@@ -21,6 +22,15 @@ def decode_unicode_url(url_str):
 
 def decode_quoted_url(url_str):
     return urllib.unquote(url_str)
+
+def unshorten_url(url):
+   # parsed = urlparse.urlparse(url)
+   # h = httplib.HTTPConnection(parsed.netloc)
+   # httplib.HttpConnection.debuglevel = 1
+   cj = CookieJar()
+   request = urllib2.Request(url)
+   opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+   return opener.open(request).url
 
 def extract_shortened_urls(url):
     html_page = http_download(url)
@@ -50,7 +60,7 @@ def extract_shortened_urls(url):
 
 def apply_transform(url_list):
     for target_url in url_list:
-        print target_url
+        print target_url + " --> " + unshorten_url(target_url)
 
 def main():
     url_list = extract_shortened_urls("http://facebook.com/nytimes/")
